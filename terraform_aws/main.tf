@@ -26,28 +26,28 @@ resource "aws_vpc" "Seminar_VPC" {
 
 # Subnet
 resource "aws_subnet" "Seminar_2a_public"{
-  vpc_id = aws_vpc.Seminar_VPC
+  vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.0/26"
   tags = {
     Name = "Seminar_Subnet_public"
   }
 }
 resource "aws_subnet" "Seminar_2a_private"{
-  vpc_id = aws_vpc.Seminar_VPC
+  vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.64/26"
   tags = {
     Name = "Seminar_Subnet_pricate_1"
   }
 }
 resource "aws_subnet" "Seminar_2b"{
-  vpc_id = aws_vpc.Seminar_VPC
+  vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.128/26"
   tags = {
     Name = "Seminar_Subnet_private_2"
   }
 }
 resource "aws_subnet" "Seminar_2c"{
-  vpc_id = aws_vpc.Seminar_VPC
+  vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.192/26"
   tags = {
     Name = "Seminar_Subnet_private_3"
@@ -56,7 +56,7 @@ resource "aws_subnet" "Seminar_2c"{
 
 # IGW 
 resource "aws_internet_gateway" "Seminar_IGW" {
-  vpc_id = aws_vpc.Seminar_VPC
+  vpc_id = aws_vpc.Seminar_VPC.id
   tags = {
     Name = "Seminar_IGW"
   }
@@ -68,7 +68,7 @@ resource "aws_internet_gateway" "Seminar_IGW" {
 # NAT Gateway
 resource "aws_nat_gateway" "Seminar_NAT" {
   
-  subnet_id = aws_subnet.Seminar_2a
+  subnet_id = aws_subnet.Seminar_2a_public
   tags = {
     Name = "Seminar_NAT"
   }
