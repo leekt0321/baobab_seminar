@@ -6,7 +6,7 @@ terraform {
   aws = {
     source = "hashicorp/aws"
     // aws provider 버전이 4.0버전 이상인 경우 실행
-    version = "~> 4.0"
+    version = "~> 5.0"
     }
   }
 }
