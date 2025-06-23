@@ -28,6 +28,7 @@ resource "aws_vpc" "Seminar_VPC" {
 resource "aws_subnet" "Seminar_2a_public"{
   vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.0/26"
+  availability_zone = "ap-northeast-2a"
   tags = {
     Name = "Seminar_Subnet_public"
   }
@@ -35,6 +36,7 @@ resource "aws_subnet" "Seminar_2a_public"{
 resource "aws_subnet" "Seminar_2a_private"{
   vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.64/26"
+  availability_zone = "ap-northeast-2a"
   tags = {
     Name = "Seminar_Subnet_pricate_1"
   }
@@ -42,6 +44,7 @@ resource "aws_subnet" "Seminar_2a_private"{
 resource "aws_subnet" "Seminar_2b"{
   vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.128/26"
+  availability_zone = "ap-northeast-2b"
   tags = {
     Name = "Seminar_Subnet_private_2"
   }
@@ -49,6 +52,7 @@ resource "aws_subnet" "Seminar_2b"{
 resource "aws_subnet" "Seminar_2c"{
   vpc_id = aws_vpc.Seminar_VPC.id
   cidr_block = "10.10.10.192/26"
+  availability_zone = "ap-northeast-2c"
   tags = {
     Name = "Seminar_Subnet_private_3"
   }
@@ -63,12 +67,16 @@ resource "aws_internet_gateway" "Seminar_IGW" {
 }
 
 # Elastic IP
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
 
 
 # NAT Gateway
 resource "aws_nat_gateway" "Seminar_NAT" {
   
-  subnet_id = aws_subnet.Seminar_2a_public
+  subnet_id = aws_subnet.Seminar_2a_public.id
+  allocation_id = aws_eip.nat_eip.id
   tags = {
     Name = "Seminar_NAT"
   }
