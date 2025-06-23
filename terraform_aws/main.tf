@@ -139,3 +139,4 @@ resource "aws_route_table_association" "private_association_2c" {
 
 # SG(Security Group)
 
+# EC2
