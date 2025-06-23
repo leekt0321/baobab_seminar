@@ -30,7 +30,7 @@ resource "aws_subnet" "Seminar_2a_public"{
   cidr_block = "10.10.10.0/26"
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "Seminar_Subnet_public"
+    Name = "Seminar_Subnet_public_2a"
   }
 }
 resource "aws_subnet" "Seminar_2a_private"{
@@ -38,7 +38,7 @@ resource "aws_subnet" "Seminar_2a_private"{
   cidr_block = "10.10.10.64/26"
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "Seminar_Subnet_pricate_1"
+    Name = "Seminar_Subnet_private_2a"
   }
 }
 resource "aws_subnet" "Seminar_2b_private"{
@@ -46,7 +46,7 @@ resource "aws_subnet" "Seminar_2b_private"{
   cidr_block = "10.10.10.128/26"
   availability_zone = "ap-northeast-2b"
   tags = {
-    Name = "Seminar_Subnet_private_2"
+    Name = "Seminar_Subnet_private_2b"
   }
 }
 resource "aws_subnet" "Seminar_2c_private"{
@@ -54,7 +54,7 @@ resource "aws_subnet" "Seminar_2c_private"{
   cidr_block = "10.10.10.192/26"
   availability_zone = "ap-northeast-2c"
   tags = {
-    Name = "Seminar_Subnet_private_3"
+    Name = "Seminar_Subnet_private_2c"
   }
 }
 
@@ -69,6 +69,7 @@ resource "aws_internet_gateway" "Seminar_IGW" {
 # Elastic IP
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
+  depends_on = [ aws_internet_gateway.Seminar_IGW ]
 }
 
 
@@ -104,7 +105,7 @@ resource "aws_route_table_association" "public_association" {
 }
 
 
-# Routing Table(private subnet)
+# Routing Table(private subnet) 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.Seminar_VPC.id
   route{
@@ -117,7 +118,7 @@ resource "aws_route_table" "private_route_table" {
   
 }
 
-# Routing Table Association(private subnet)
+# Routing Table Association(private subnet) - 2a,2b,2c
 resource "aws_route_table_association" "private_association_2a" {
  subnet_id = aws_subnet.Seminar_2a_private.id
  route_table_id = aws_route_table.private_route_table.id
