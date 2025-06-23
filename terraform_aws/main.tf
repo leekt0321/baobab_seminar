@@ -95,5 +95,3 @@ resource "aws_instance" "name" {
   }
 }
 */
-
-////testtttttttt
