@@ -215,13 +215,16 @@ resource "aws_instance" "bastion_ec2" {
     Name = "BastionHost"
   }
 
-  provisioner "local-exec" {
+  provisioner "local-exec" {  // 로컬에서 실행하는 것이고 bastion에서 실행되는 것이 아님. bastion에 키 전달은 수동으로 하는걸 권장, User Data로 전달은 보안상 위험
+  ### terraform apply 후 해당 명령어 실행
+  # scp -i seminar_key.pem seminar_key.pem ec2-user@<public_IP>:~
+  ### 
     command = "echo '${tls_private_key.ssh_key.private_key_pem}' > seminar-key.pem && chmod 400 seminar-key.pem"
   }
 }
 
 resource "aws_instance" "private_ec2" {
-  ami                    = "ami-0c593c3690c32e925" # Amazon Linux 2 (예시)
+  ami                    = "ami-0c593c3690c32e925" 
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.Seminar_2c_private.id
   vpc_security_group_ids = [aws_security_group.private_ec2_sg.id]
@@ -236,6 +239,10 @@ resource "aws_instance" "private_ec2" {
 output "instance_public_ip"{
   description = "EC2 인스턴스 퍼블릭 IP 주소"
   value = aws_instance.bastion_ec2.public_ip
+}
+output "instance_private_ip"{
+  description = "EC2 인스턴스 프라이빗 IP 주소"
+  value = aws_instance.private_ec2.private_ip
 }
 
 # CVO
