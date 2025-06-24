@@ -8,6 +8,11 @@ terraform {
     // aws provider 버전이 4.0버전 이상인 경우 실행
     version = "~> 5.0"
     }
+
+  tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.1"
+    }
   }
 }
 provider "aws" {
@@ -135,10 +140,102 @@ resource "aws_route_table_association" "private_association_2c" {
 }
 
 
-# Network ACL
+# Test SG(Security Group)
+resource "aws_security_group" "bastion_sg" {
+  name        = "bastion_sg"
+  description = "Allow SSH"
+  vpc_id      = aws_vpc.Seminar_VPC.id
 
-# SG(Security Group)
+  ingress {
+    description = "SSH from anywhere (test only)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "bastion_sg"
+  }
+}
+
+resource "aws_security_group" "private_ec2_sg" {
+  name        = "private_ec2_sg"
+  description = "Allow SSH from Bastion"
+  vpc_id      = aws_vpc.Seminar_VPC.id
+
+  ingress {
+    description     = "SSH from Bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "private_ec2_sg"
+  }
+}
+
+# key-pair
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "bastion_key" {
+  key_name   = "seminar-key"
+  public_key = tls_private_key.ssh_key.public_key_openssh
+}
 
 # EC2
+resource "aws_instance" "bastion_ec2" {
+  ami                         = "ami-0c593c3690c32e925" # Amazon Linux 2 (예시)
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.Seminar_2a_public.id
+  vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
+  key_name                    = aws_key_pair.bastion_key.key_name
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "BastionHost"
+  }
+
+  provisioner "local-exec" {
+    command = "echo '${tls_private_key.ssh_key.private_key_pem}' > seminar-key.pem && chmod 400 seminar-key.pem"
+  }
+}
+
+resource "aws_instance" "private_ec2" {
+  ami                    = "ami-0c593c3690c32e925" # Amazon Linux 2 (예시)
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.Seminar_2c_private.id
+  vpc_security_group_ids = [aws_security_group.private_ec2_sg.id]
+  key_name               = aws_key_pair.bastion_key.key_name
+
+  tags = {
+    Name = "PrivateEC2"
+  }
+}
+
+# output
+output "instance_public_ip"{
+  description = "EC2 인스턴스 퍼블릭 IP 주소"
+  value = aws_instance.bastion_ec2.public_ip
+}
 
 # CVO
