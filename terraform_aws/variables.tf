@@ -48,3 +48,7 @@ variable "aws_instance_type" {
   type = string
   default = "t2.micro"
 }
+
+variable "refresh_token" {
+  type = string
+}
