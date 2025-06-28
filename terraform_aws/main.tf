@@ -9,19 +9,19 @@ terraform {
     version = "~> 5.0"
     }
 
-  tls = {
+  tls = {  // 암호화 키(예: TLS/SSH 키)와 인증서를 생성하는 기능을 제공
       source  = "hashicorp/tls"
       version = "~> 4.1"
     }
   }
 }
 provider "aws" {
-region = "ap-northeast-2"
+region = var.aws_region
 }
 
 # VPC
 resource "aws_vpc" "Seminar_VPC" {
-  cidr_block = "10.10.10.0/24"
+  cidr_block = var.aws_VPC
   instance_tenancy = "default"
 
   tags = {
@@ -32,32 +32,25 @@ resource "aws_vpc" "Seminar_VPC" {
 # Subnet
 resource "aws_subnet" "Seminar_2a_public"{
   vpc_id = aws_vpc.Seminar_VPC.id
-  cidr_block = "10.10.10.0/26"
-  availability_zone = "ap-northeast-2a"
+  cidr_block = var.aws_Seminar_2a_public_cidr
+  availability_zone = var.aws_az_a
   tags = {
     Name = "Seminar_Subnet_public_2a"
   }
 }
 resource "aws_subnet" "Seminar_2a_private"{
   vpc_id = aws_vpc.Seminar_VPC.id
-  cidr_block = "10.10.10.64/26"
-  availability_zone = "ap-northeast-2a"
+  cidr_block = var.aws_Seminar_2a_private_cidr
+  availability_zone = var.aws_az_a
   tags = {
     Name = "Seminar_Subnet_private_2a"
   }
 }
-resource "aws_subnet" "Seminar_2b_private"{
-  vpc_id = aws_vpc.Seminar_VPC.id
-  cidr_block = "10.10.10.128/26"
-  availability_zone = "ap-northeast-2b"
-  tags = {
-    Name = "Seminar_Subnet_private_2b"
-  }
-}
+
 resource "aws_subnet" "Seminar_2c_private"{
   vpc_id = aws_vpc.Seminar_VPC.id
-  cidr_block = "10.10.10.192/26"
-  availability_zone = "ap-northeast-2c"
+  cidr_block = var.aws_Seminar_2c_private_cidr
+  availability_zone = var.aws_az_c
   tags = {
     Name = "Seminar_Subnet_private_2c"
   }
@@ -123,16 +116,12 @@ resource "aws_route_table" "private_route_table" {
   
 }
 
-# Routing Table Association(private subnet) - 2a,2b,2c
+# Routing Table Association(private subnet) - 2a,2c
 resource "aws_route_table_association" "private_association_2a" {
  subnet_id = aws_subnet.Seminar_2a_private.id
  route_table_id = aws_route_table.private_route_table.id
 }
 
-resource "aws_route_table_association" "private_association_2b" {
- subnet_id = aws_subnet.Seminar_2b_private.id
- route_table_id = aws_route_table.private_route_table.id
-}
 
 resource "aws_route_table_association" "private_association_2c" {
  subnet_id = aws_subnet.Seminar_2c_private.id
@@ -140,7 +129,7 @@ resource "aws_route_table_association" "private_association_2c" {
 }
 
 
-# Test SG(Security Group)
+# SG(Security Group)
 resource "aws_security_group" "bastion_sg" {
   name        = "bastion_sg"
   description = "Allow SSH"
@@ -151,7 +140,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] // 접속 허용할 범위 지정
   }
 
   egress {
@@ -176,7 +165,7 @@ resource "aws_security_group" "private_ec2_sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.bastion_sg.id]
+    security_groups = [aws_security_group.bastion_sg.id] // bastion에서만 접근 허용 
   }
 
   egress {
@@ -198,14 +187,14 @@ resource "tls_private_key" "ssh_key" {
 }
 
 resource "aws_key_pair" "bastion_key" {
-  key_name   = "seminar-key"
+  key_name   = var.aws_bastion_key
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
 # EC2
 resource "aws_instance" "bastion_ec2" {
   ami                         = "ami-0c593c3690c32e925" # Amazon Linux 2 (예시)
-  instance_type               = "t2.micro"
+  instance_type               = var.aws_instance_type
   subnet_id                   = aws_subnet.Seminar_2a_public.id
   vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
   key_name                    = aws_key_pair.bastion_key.key_name
@@ -219,30 +208,25 @@ resource "aws_instance" "bastion_ec2" {
   ### terraform apply 후 해당 명령어 실행
   # scp -i seminar_key.pem seminar_key.pem ec2-user@<public_IP>:~
   ### 
-    command = "echo '${tls_private_key.ssh_key.private_key_pem}' > seminar-key.pem && chmod 400 seminar-key.pem"
+    command = <<EOT
+    echo "${tls_private_key.ssh_key.private_key_pem}" > seminar-key.pem
+    chmod 400 seminar-key.pem
+    echo "seminar-key.pem 생성 완료"
+    EOT
+
   }
 }
 
-resource "aws_instance" "private_ec2" {
-  ami                    = "ami-0c593c3690c32e925" 
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.Seminar_2c_private.id
-  vpc_security_group_ids = [aws_security_group.private_ec2_sg.id]
-  key_name               = aws_key_pair.bastion_key.key_name
-
-  tags = {
-    Name = "PrivateEC2"
-  }
-}
 
 # output
 output "instance_public_ip"{
   description = "EC2 인스턴스 퍼블릭 IP 주소"
   value = aws_instance.bastion_ec2.public_ip
 }
-output "instance_private_ip"{
-  description = "EC2 인스턴스 프라이빗 IP 주소"
-  value = aws_instance.private_ec2.private_ip
+output "private_key" { // key 값 노출 방지
+  value = tls_private_key.ssh_key.private_key_pem
+  sensitive = true
 }
+
 
 # CVO
