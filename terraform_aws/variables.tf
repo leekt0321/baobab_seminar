@@ -50,5 +50,14 @@ variable "aws_instance_type" {
 }
 
 variable "refresh_token" {
+  description = "blueXP API refresh_token"
   type = string
+  sensitive = true
+}
+
+variable "svm_password" { // 초기 비밀번호
+    description = "Password for the CVO SVM admin"
+    type = string
+    sensitive = true
+  
 }
