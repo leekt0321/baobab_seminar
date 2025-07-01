@@ -168,5 +168,13 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
 }
 
+data "aws_instance" "connector_ec2" {
+  # 생성된 connector ec2의 private ip를 얻기 위해 data 사용
+  filter {
+    name = "tag:Name"
+    values = ["Terraform-ConnectorAWS"]
+  }
+  
+}
 
 # CVO EC2
