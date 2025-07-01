@@ -9,5 +9,4 @@ output "private_key" { // key 값 노출 방지
 }
 output "CVO_connector_ec2_private_ip" {
   description = "CVO connector ec2 인스턴스 프라이빗 ip 주소"
-  value = data.aws_instance.connector_ec2.private_ip
 }
