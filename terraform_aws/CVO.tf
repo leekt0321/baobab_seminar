@@ -35,6 +35,32 @@ resource "aws_iam_role" "cvo_connector_role" {
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
+  Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = "cvo_connector_role"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+})
+
+  tags = {
+    tag-key = "cvo_connector_role"
+  }
+}
+
+# IAM Policy
+resource "aws_iam_policy" "cvo_connector_policy" {
+  name        = "cvo_connector_policy"
+  description = "Policy for CVO Connector to manage EC2 and related resources"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
   "Version": "2012-10-17",
   "Statement": [
     {
@@ -106,11 +132,8 @@ resource "aws_iam_role" "cvo_connector_role" {
     }
   ]
 })
-
-  tags = {
-    tag-key = "cvo_connector_role"
-  }
 }
+
 # IAM instance profile
 /*
 IAM Role을 EC2에 할당해줘야 하는데 인스턴스에 바로 역할을 붙이지 못 함.
