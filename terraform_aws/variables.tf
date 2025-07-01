@@ -1,15 +1,16 @@
+# variable.tf
 variable "aws_region"{
     description = "AWS 리전"
     type = string
     default = "ap-northeast-2"
 }
 variable "aws_az_a"{
-    description = "AWS 리전"
+    description = "AWS AZ 2a"
     type = string
     default = "ap-northeast-2a"
 }
 variable "aws_az_c"{
-    description = "AWS 리전"
+    description = "AWS AZ 2c"
     type = string
     default = "ap-northeast-2c"
 }
@@ -17,6 +18,12 @@ variable "aws_bastion_key" {
   description = "AWS Bastion 키"
   type = string
   default = "seminar_key"
+}
+
+variable "aws_connector_key" {
+  description = "CVO Connector key name"
+  type = string
+  default = "connector_key"
 }
 
 variable "aws_Seminar_2a_private_cidr"{

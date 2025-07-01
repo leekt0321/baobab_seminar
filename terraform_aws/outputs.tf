@@ -1,4 +1,4 @@
-# output
+# output.tf
 output "instance_public_ip"{
   description = "EC2 인스턴스 퍼블릭 IP 주소"
   value = aws_instance.bastion_ec2.public_ip

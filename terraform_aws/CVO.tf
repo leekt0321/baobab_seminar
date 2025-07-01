@@ -1,3 +1,4 @@
+# CVO.tf
 /*
 
 * CVO 구성하는 방법
@@ -47,7 +48,123 @@ provider "netapp-cloudmanager" {
   
 }
 
+# IAM - connector policy를 가진 ID 생성
+# IAM Role
+resource "aws_iam_role" "cvo_connector_role" {
+  name = "cvo_connector_role"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:PutRolePolicy",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteRolePolicy",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:PassRole",
+        "iam:ListRoles",
+        "ec2:DescribeInstanceStatus",
+        "ec2:RunInstances",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeSecurityGroups",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+        "ec2:ModifyNetworkInterfaceAttribute",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeKeyPairs",
+        "ec2:DescribeRegions",
+        "ec2:DescribeInstances",
+        "ec2:CreateTags",
+        "ec2:DescribeImages",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeLaunchTemplates",
+        "ec2:CreateLaunchTemplate",
+        "cloudformation:CreateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:ValidateTemplate",
+        "ec2:AssociateIamInstanceProfile",
+        "ec2:DescribeIamInstanceProfileAssociations",
+        "ec2:DisassociateIamInstanceProfile",
+        "iam:GetRole",
+        "iam:TagRole",
+        "kms:ListAliases",
+        "cloudformation:ListStacks"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:TerminateInstances"
+      ],
+      "Condition": {
+        "StringLike": {
+          "ec2:ResourceTag/OCCMInstance": "*"
+        }
+      },
+      "Resource": [
+        "arn:aws:ec2:*:*:instance/*"
+      ]
+    }
+  ]
+})
+
+  tags = {
+    tag-key = "cvo_connector_role"
+  }
+}
+# IAM instance profile
+/*
+IAM Role을 EC2에 할당해줘야 하는데 인스턴스에 바로 역할을 붙이지 못 함.
+역할을 인스턴스 프로파일에 연결하고, 프로파일을 ec2에 연결하는 식으로 부여
+*/
+resource "aws_iam_instance_profile" "cvo_connector_EC2_profile" {
+  name = "connector_EC2_profile"
+  role = aws_iam_role.cvo_connector_role.name
+}
+
+# CVO connector key pair
+resource "aws_key_pair" "connector_key" {
+  key_name   = var.aws_connector_key
+  public_key = tls_private_key.ssh_key.public_key_openssh
+}
+
+
 # CVO Connector
+resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
+  provider = netapp-cloudmanager
+  name = "Terraform-ConnectorAWS"
+  region = var.aws_region
+  key_name = var.aws_connector_key
+  company = "baobab"
+  instance_type = "t3.xlarge"
+  aws_tag {
+              tag_key = "Name"
+              tag_value = "CVO_connector"
+            }
+  subnet_id = aws_subnet.Seminar_2a_private.id
+  security_group_id = aws_security_group.private_ec2_sg.id
+  iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
+}
+
 
 # CVO EC2
-
