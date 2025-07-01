@@ -22,27 +22,6 @@ provider "netapp-cloudmanager" {
 }
 */
 
-terraform {
-  // terraform 버전이 1.0.0버전 이상 2.0.0버전 미만
-  required_version = ">= 1.0.0, < 2.0.0"
-  
-  required_providers {
-  netapp-cloudmanager = {
-    // netapp-cloudmanager 25.3.0버전
-    source = "NetApp/netapp-cloudmanager"
-    version = "~> 25.3.0"
-    }
-  aws = {
-    source = "hashicorp/aws"
-    // aws provider 버전이 4.0버전 이상인 경우 실행
-    version = "~> 5.0"
-    }
-  }
-}
-provider "aws" {
-  region = var.aws_region
-}
-
 provider "netapp-cloudmanager" {
   refresh_token = var.refresh_token
   

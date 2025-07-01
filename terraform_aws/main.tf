@@ -9,6 +9,11 @@ terraform {
     // aws provider 버전이 4.0버전 이상인 경우 실행
     version = "~> 5.0"
     }
+  netapp-cloudmanager = {
+    // netapp-cloudmanager 25.3.0버전
+    source = "NetApp/netapp-cloudmanager"
+    version = "~> 25.3.0"
+    }
 
   tls = {  // 암호화 키(예: TLS/SSH 키)와 인증서를 생성하는 기능을 제공
       source  = "hashicorp/tls"
