@@ -151,12 +151,18 @@ resource "aws_iam_role_policy_attachment" "connector_attachment" {
   
 }
 
+
+# key-pair
+resource "tls_private_key" "ssh_connector_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 # CVO connector key pair
 resource "aws_key_pair" "connector_key" {
   key_name   = var.aws_connector_key
-  public_key = tls_private_key.ssh_key.public_key_openssh
+  public_key = tls_private_key.ssh_connector_key.public_key_openssh
 }
-
 
 # CVO Connector
 resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
