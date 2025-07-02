@@ -49,7 +49,7 @@ resource "aws_iam_role" "cvo_connector_role" {
 })
 
   tags = {
-    tag-key = "cvo_connector_role"
+    Name = "cvo_connector_role"
   }
 }
 
