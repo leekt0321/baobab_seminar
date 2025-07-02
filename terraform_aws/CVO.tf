@@ -145,7 +145,11 @@ resource "aws_iam_instance_profile" "cvo_connector_EC2_profile" {
 }
 
 # IAM role policy attachment
-
+resource "aws_iam_role_policy_attachment" "connector_attachment" {
+  role = aws_iam_role.cvo_connector_role.name
+  policy_arn = aws_iam_policy.cvo_connector_policy.arn
+  
+}
 
 # CVO connector key pair
 resource "aws_key_pair" "connector_key" {
