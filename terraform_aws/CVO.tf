@@ -40,7 +40,7 @@ resource "aws_iam_role" "cvo_connector_role" {
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Sid    = "cvo_connector_role"
+        Sid    = ""
         Principal = {
           Service = "ec2.amazonaws.com"
         }
@@ -144,6 +144,9 @@ resource "aws_iam_instance_profile" "cvo_connector_EC2_profile" {
   role = aws_iam_role.cvo_connector_role.name
 }
 
+# IAM role policy attachment
+
+
 # CVO connector key pair
 resource "aws_key_pair" "connector_key" {
   key_name   = var.aws_connector_key
@@ -160,7 +163,7 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   company = "baobab"
   instance_type = "t3.xlarge"
   aws_tag {
-              tag_key = "Name"
+              tag_key = "bluexp"
               tag_value = "CVO_connector"
             }
   subnet_id = aws_subnet.Seminar_2a_private.id
