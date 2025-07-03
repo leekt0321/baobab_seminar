@@ -21,6 +21,7 @@ output "apply_success_node" {
 
   <접속 안내>
   * bastion에서 connector로 접속하기 위해서는 'scp -i seminar_key.pem connector_key.pem ec2-user@<bastion_public_ip>:~' 입력 필수
+  * bastion에서 mediator로 접속하기 위해서는 'scp -i seminar_key.pem mediator_key.pem ec2-user@<bastion_public_ip>:~' 입력 필수
   1. bastion 접속: ssh -i seminar_key.pem ec2-user@<bastion_public_ip>
   2. connector 접속 및 테스트
      접속: ssh -i seminar_key.pem ec2-user@<bastion_public_ip>

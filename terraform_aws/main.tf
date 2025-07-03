@@ -229,4 +229,12 @@ resource "aws_instance" "bastion_ec2" {  # AMI는 계속 바뀌므로 data resou
     EOT
     interpreter = [ "/bin/bash", "-c" ]
   }
+  provisioner "local-exec" {
+    command = <<EOT
+    echo "${tls_private_key.ssh_mediator_key.private_key_pem}" > mediator-key.pem
+    chmod 400 mediator-key.pem
+    echo "mediator-key.pem 생성 완료"
+    EOT
+    interpreter = [ "/bin/bash", "-c" ]
+  }
 }

@@ -26,6 +26,12 @@ variable "aws_connector_key" {
   default = "connector_key"
 }
 
+variable "aws_mediator_key" {
+  description = "CVO Mediator key name"
+  type = string
+  default = "mediator_key"
+}
+
 variable "aws_Seminar_2a_private_cidr"{
     description = "AWS_2a_private_subnet"
     type = string
