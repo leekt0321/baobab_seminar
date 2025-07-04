@@ -680,11 +680,12 @@ resource "netapp-cloudmanager_cvo_aws" "cvo-aws" {
   data_floating_ip = "192.168.0.101"
   data_floating_ip2 = "192.168.0.102"
   route_table_ids = [aws_route_table.private_route_table.id,aws_route_table.public_route_table.id ] # CVO HA환경에선 Floating IP로 접속 가능해야 함
-  license_type = "ha-capacity-paygo"  # 용량기반 비용청구, 기능 제한 있음 , 그리고 해당 licence를 aws marketplace에서 구독해야함.
+  license_type = "ha-capacity-paygo"  # 용량기반 비용청구, 기능 제한 있음 , 그리고 해당 licence를 aws marketplace에서 구독해야함.(노드 기반 청구는 지원 중단됨)
                                          # 구독 목록: netapp bluexp --> (변경) netapp intelligent services
                                          # 구독 후 위로 스크롤 후 set up your account 선택해 계정과 연결
   instance_type = "m5.xlarge" # default: m5.2xlarge. 비용최소화를 위해 explore로 선택
   ebs_volume_size_unit = "GB"
   ebs_volume_size = 500
   mediator_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
+  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws ]
 }
