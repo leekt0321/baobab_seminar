@@ -647,6 +647,7 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   subnet_id = aws_subnet.Seminar_2a_private.id
   security_group_id = aws_security_group.private_ec2_sg.id
   iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
+  depends_on = [aws_internet_gateway.Seminar_IGW]
 }
 
 # key-pair - mediator

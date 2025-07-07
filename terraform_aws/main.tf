@@ -68,6 +68,7 @@ resource "aws_internet_gateway" "Seminar_IGW" {
   tags = {
     Name = "Seminar_IGW"
   }
+  
 }
 
 # Elastic IP
