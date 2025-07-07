@@ -2,17 +2,17 @@
 variable "aws_region"{
     description = "AWS 리전"
     type = string
-    default = "ap-northeast-2"
+    default = "us-east-2" # ap-northeast-2
 }
 variable "aws_az_a"{
     description = "AWS AZ 2a"
     type = string
-    default = "ap-northeast-2a"
+    default = "us-east-2a"
 }
 variable "aws_az_c"{
     description = "AWS AZ 2c"
     type = string
-    default = "ap-northeast-2c"
+    default = "us-east-2c"
 }
 variable "aws_bastion_key" {
   description = "AWS Bastion 키"
@@ -59,7 +59,7 @@ variable "aws_VPC"{
 variable "aws_instance_type" {
   description = "AWS instance type"
   type = string
-  default = "t2.micro"
+  default = "t3.micro"
 }
 
 variable "refresh_token" {
