@@ -647,7 +647,7 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   subnet_id = aws_subnet.Seminar_2a_private.id
   security_group_id = aws_security_group.private_ec2_sg.id
   iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
-  depends_on = [aws_internet_gateway.Seminar_IGW]
+  depends_on = [aws_internet_gateway.Seminar_IGW, aws_key_pair.connector_key]
 }
 
 # key-pair - mediator
@@ -688,5 +688,5 @@ resource "netapp-cloudmanager_cvo_aws" "cvo-aws" {
   ebs_volume_size_unit = "GB"
   ebs_volume_size = 500
   mediator_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
-  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws ]
+  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws , aws_key_pair.mediator_key]
 }
