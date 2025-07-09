@@ -649,6 +649,13 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
   depends_on = [aws_internet_gateway.Seminar_IGW, aws_key_pair.connector_key]
 }
+resource "null_resource" "wait_for_connector" {
+  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws ]
+  provisioner "local-exec" {
+    command = "echo 'Waiting for connector'; sleep 30"
+    
+  }
+}
 
 # key-pair - mediator
 resource "tls_private_key" "ssh_mediator_key" {
@@ -688,5 +695,5 @@ resource "netapp-cloudmanager_cvo_aws" "cvo-aws" {
   ebs_volume_size_unit = "GB"
   ebs_volume_size = 500
   mediator_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
-  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws , aws_key_pair.mediator_key]
+  depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws , aws_key_pair.mediator_key,null_resource.wait_for_connector]
 }
