@@ -30,3 +30,32 @@ provider "netapp-cloudmanager" {
   
 }
 
+module "VPC" {
+  source = "./modules/VPC"
+}
+
+module "Key-pair" {
+  source = "./modules/Key-pair"
+}
+
+module "IAM" {
+  source = "./modules/IAM"
+  depends_on = [ module.VPC ]
+}
+
+module "EC2" {
+  source = "./modules/EC2"
+  depends_on = [ module.IAM ]
+}
+
+module "CVO_Connector" {
+  source = "./modules/CVO_Connector"
+  depends_on = [ module.EC2 ]
+}
+
+module "CVO_AWS" {
+  source = "./modules/CVO_AWS"
+  svm_password = var.svm_password
+  depends_on = [ module.CVO_Connector ]
+
+}

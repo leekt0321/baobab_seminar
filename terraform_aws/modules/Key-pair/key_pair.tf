@@ -34,3 +34,23 @@ resource "aws_key_pair" "mediator_key" {
   key_name   = var.aws_mediator_key
   public_key = tls_private_key.ssh_mediator_key.public_key_openssh
 }
+
+
+resource "local_file" "bastion_private_key" {
+  content         = tls_private_key.ssh_key.private_key_pem
+  filename        = "seminar-key.pem"
+  file_permission = "0400"
+}
+
+resource "local_file" "connector_private_key" {
+  content         = tls_private_key.ssh_connector_key.private_key_pem
+  filename        = "connector-key.pem"
+  file_permission = "0400"
+}
+
+resource "local_file" "mediator_private_key" {
+  content         = tls_private_key.ssh_mediator_key.private_key_pem
+  filename        = "mediator-key.pem"
+  file_permission = "0400"
+}
+

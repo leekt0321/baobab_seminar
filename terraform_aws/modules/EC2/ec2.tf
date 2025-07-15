@@ -10,33 +10,4 @@ resource "aws_instance" "bastion_ec2" {  # AMI는 계속 바뀌므로 data resou
   tags = {
     Name = "BastionHost"
   }
-
-  provisioner "local-exec" {  // 로컬에서 실행하는 것이고 bastion에서 실행되는 것이 아님. bastion에 키 전달은 수동으로 하는걸 권장, User Data로 전달은 보안상 위험
-  ### terraform apply 후 해당 명령어 실행
-  # scp -i seminar_key.pem seminar_key.pem ec2-user@<public_IP>:~
-  ### 
-    command = <<EOT
-    echo "${tls_private_key.ssh_key.private_key_pem}" > seminar-key.pem
-    chmod 400 seminar-key.pem
-    echo "seminar-key.pem 생성 완료"
-    EOT
-    interpreter = [ "/bin/bash", "-c" ]
-  }
-  provisioner "local-exec" {
-    command = <<EOT
-    echo "${tls_private_key.ssh_connector_key.private_key_pem}" > connector-key.pem
-    chmod 400 connector-key.pem
-    echo "connector-key.pem 생성 완료"
-    EOT
-    interpreter = [ "/bin/bash", "-c" ]
-  }
-  provisioner "local-exec" {
-    //when = create
-    command = <<EOT
-    echo "${tls_private_key.ssh_mediator_key.private_key_pem}" > mediator-key.pem
-    chmod 400 mediator-key.pem
-    echo "mediator-key.pem 생성 완료"
-    EOT
-    interpreter = [ "/bin/bash", "-c" ]
-  }
 }

@@ -1,14 +1,13 @@
-# variable.tf
 variable "aws_region"{
     description = "AWS 리전"
     type = string
     default = "us-east-2" # ap-northeast-2
 }
 
-variable "refresh_token" {
-  description = "blueXP API refresh_token"
+variable "aws_mediator_key" {
+  description = "CVO Mediator key name"
   type = string
-  sensitive = true
+  default = "mediator_key"
 }
 
 variable "svm_password" { // 초기 비밀번호
