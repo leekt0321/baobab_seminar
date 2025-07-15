@@ -45,6 +45,9 @@ module "IAM" {
 
 module "EC2" {
   source = "./modules/EC2"
+  Seminar_2a_public = module.VPC.Seminar_2a_public_id
+  bastion_key = module.Key-pair.bastion_key_keyname
+  security_group = module.VPC.bastion_sg_id
   depends_on = [ module.IAM ]
 }
 

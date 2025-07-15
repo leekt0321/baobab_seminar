@@ -1,4 +1,13 @@
 # CVO EC2 - HA 구성
+terraform {
+  required_providers {
+    netapp-cloudmanager = {
+      source = "netApp/netapp-cloudmanager"
+      version = "~> 25.3.0"
+    }
+  }
+}
+
 resource "netapp-cloudmanager_cvo_aws" "cvo-aws" {
   provider = netapp-cloudmanager
   name = "terraformCVO"

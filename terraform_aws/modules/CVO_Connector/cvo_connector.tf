@@ -1,4 +1,13 @@
 # CVO Connector
+terraform {
+  required_providers {
+    netapp-cloudmanager = {
+      source = "netApp/netapp-cloudmanager"
+      version = "~> 25.3.0"
+    }
+  }
+}
+
 resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
   provider = netapp-cloudmanager
   name = "Terraform-ConnectorAWS"
