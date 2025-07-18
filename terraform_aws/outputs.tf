@@ -15,3 +15,6 @@ output "apply_success_node" {
   
   EOT
 }
+output "bastion_public_ip" {
+  value = module.EC2.bastion_public_ip
+}
