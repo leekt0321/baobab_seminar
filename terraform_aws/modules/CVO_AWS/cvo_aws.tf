@@ -31,6 +31,6 @@ resource "netapp-cloudmanager_cvo_aws" "cvo-aws" {
                                          # 구독 후 위로 스크롤 후 set up your account 선택해 계정과 연결
   instance_type = "m5.xlarge" # default: m5.2xlarge. 비용최소화를 위해 explore로 선택
   ebs_volume_size_unit = "GB"
-  ebs_volume_size = 500
+  ebs_volume_size = 100
   mediator_instance_profile_name = var.cvo_connector_EC2_profile_name
 }
