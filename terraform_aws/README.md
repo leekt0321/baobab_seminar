@@ -38,4 +38,4 @@ provider "netapp-cloudmanager" {
       4. data ip(nfs/cifs/iscsi)
 
 * 코드 변경 시 github 올리기
-- git.sh 사용
+git.sh 사용
