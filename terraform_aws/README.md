@@ -16,3 +16,23 @@ provider "netapp-cloudmanager" {
   aws_profile_file_path = var.cloudmanager_aws_profile_file_path  -> Default로 ~/.aws/credentials에 있고, access key, secret key가 들어있으면 없어도 됌
   azure_auth_methods    = var.cloudmanager_azure_auth_methods  -> azure 사용 시 사용
 }
+
+  <접속 안내>
+  * bastion에서 connector로 접속하기 위해서는 'scp -i seminar_key.pem connector_key.pem ec2-user@<bastion_public_ip>:~' 입력 필수
+  * bastion에서 mediator로 접속하기 위해서는 'scp -i seminar_key.pem mediator_key.pem ec2-user@<bastion_public_ip>:~' 입력 필수
+
+  1. bastion 접속: ssh -i seminar_key.pem ec2-user@<bastion_public_ip>
+  2. connector 접속 및 테스트
+     접속: ssh -i seminar_key.pem ec2-user@<bastion_public_ip>
+           ssh -i connector_key.pem ubuntu@<connector_private_ip>
+     테스트: ping 8.8.8.8
+            curl -s https://google.com (EX: 301 Moved로 뜨면 정상)
+  3. CVO 접속
+     접속: ssh -i seminar_key.pem ec2-user@<bastion_public_ip>
+           ssh -i mediator_key.pem admin@<CVO_private_ip>
+
+      CVO의 private IP가 4개 있을 것.
+      1. cluster mgmt ip
+      2. node mgmt ip
+      3. cluster inter ip
+      4. data ip(nfs/cifs/iscsi)

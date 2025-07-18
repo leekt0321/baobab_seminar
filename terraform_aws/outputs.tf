@@ -18,3 +18,7 @@ output "apply_success_node" {
 output "bastion_public_ip" {
   value = module.EC2.bastion_public_ip
 }
+
+output "cvo_mgmt_ip" {
+  value = module.CVO_AWS.cvo_mgmt_ip
+}
