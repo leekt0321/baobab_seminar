@@ -53,12 +53,21 @@ module "EC2" {
 
 module "CVO_Connector" {
   source = "./modules/CVO_Connector"
+  Seminar_2a_private_id = module.VPC.Seminar_2a_private_id
+  security_group_id = module.VPC.security_group_id
+  cvo_connector_EC2_profile_name = module.IAM.cvo_connector_EC2_profile_name
   depends_on = [ module.EC2 ]
 }
 
 module "CVO_AWS" {
   source = "./modules/CVO_AWS"
   svm_password = var.svm_password
+  Seminar_2c_private_id = module.VPC.Seminar_2c_private_id
+  Seminar_2a_private_id = module.VPC.Seminar_2a_private_id
+  Seminar_VPC_id = module.VPC.Seminar_VPC_id
+  CVO_connector_aws_client_id = module.CVO_Connector.CVO_connector_aws_client_ID
+  cvo_connector_EC2_profile_name = module.IAM.cvo_connector_EC2_profile_name
+  public_route_table_id = module.VPC.public_route_table_id
+  private_route_table_id = module.VPC.private_route_table_id
   depends_on = [ module.CVO_Connector ]
-
 }

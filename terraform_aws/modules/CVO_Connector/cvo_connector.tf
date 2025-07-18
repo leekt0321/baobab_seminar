@@ -19,10 +19,9 @@ resource "netapp-cloudmanager_connector_aws" "CVO_connector_aws" {
               tag_key = "bluexp"
               tag_value = "CVO_connector"
             }
-  subnet_id = aws_subnet.Seminar_2a_private.id
-  security_group_id = aws_security_group.private_ec2_sg.id
-  iam_instance_profile_name = aws_iam_instance_profile.cvo_connector_EC2_profile.name
-  depends_on = [aws_internet_gateway.Seminar_IGW, aws_key_pair.connector_key]
+  subnet_id = var.Seminar_2a_private_id
+  security_group_id = var.security_group_id
+  iam_instance_profile_name = var.cvo_connector_EC2_profile_name
 }
 resource "null_resource" "wait_for_connector" {
   depends_on = [ netapp-cloudmanager_connector_aws.CVO_connector_aws ]

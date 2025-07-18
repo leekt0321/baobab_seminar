@@ -9,3 +9,15 @@ variable "aws_connector_key" {
   type = string
   default = "connector_key"
 }
+
+variable "cvo_connector_EC2_profile_name" {
+  type = string
+}
+
+variable "Seminar_2a_private_id" {
+  type = string
+}
+
+variable "security_group_id" {
+  type = string
+}
