@@ -36,3 +36,6 @@ provider "netapp-cloudmanager" {
       2. node mgmt ip
       3. cluster inter ip
       4. data ip(nfs/cifs/iscsi)
+
+* 코드 변경 시 github 올리기
+- git.sh 사용
